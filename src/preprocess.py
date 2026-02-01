@@ -15,6 +15,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW_DATA_PATH = os.path.join(BASE_DIR, "data", "raw", "tourism.csv")
 LOCAL_DATA_DIR = os.path.join(BASE_DIR, "data", "processed")
 
+# Ensure the directory exists before saving
+os.makedirs(LOCAL_DATA_DIR, exist_ok=True)
+
 # ----------------------------
 # Load Dataset
 # ----------------------------
