@@ -1,0 +1,60 @@
+name: Tourism Package Prediction Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install huggingface-hub pandas xgboost scikit-learn mlflow joblib
+
+      - name: Run Pipeline Steps
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python src/preprocess.py
+          python src/train.py
+          python src/evaluate.py
+
+      - name: Deploy to Hugging Face Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python -c "
+          from huggingface_hub import HfApi
+          import os
+          api = HfApi(token=os.getenv('HF_TOKEN'))
+          repo_id = 'Sriranjan/Tourism-Package-Pred'
+          
+          # Uploading deployment assets to Space
+          files_to_upload = [
+              ('app/app.py', 'app.py'),
+              ('app/requirements.txt', 'requirements.txt'),
+              ('Dockerfile', 'Dockerfile'),
+              ('models/tourism_xgb_model.joblib', 'models/tourism_xgb_model.joblib'),
+              ('README.md', 'README.md')
+          ]
+          
+          for local_path, repo_path in files_to_upload:
+              if os.path.exists(local_path):
+                  print(f'Uploading {local_path}...')
+                  api.upload_file(
+                      path_or_fileobj=local_path,
+                      path_in_repo=repo_path,
+                      repo_id=repo_id,
+                      repo_type='space'
+                  )
+          "
