@@ -7,12 +7,13 @@ import os
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
-# ----------------------------
-# Paths (YOUR PROJECT PATH)
-# ----------------------------
-BASE_PATH = "/content/Tourism-Package-Prediction"
-RAW_DATA_PATH = f"{BASE_PATH}/data/raw/tourism.csv"
-PROCESSED_DATA_PATH = f"{BASE_PATH}/data/processed"
+#Relative Path:
+import os
+
+# Get the directory where the script is located to build paths reliably
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RAW_DATA_PATH = os.path.join(BASE_DIR, "data", "raw", "tourism.csv")
+LOCAL_DATA_DIR = os.path.join(BASE_DIR, "data", "processed")
 
 # ----------------------------
 # Load Dataset
