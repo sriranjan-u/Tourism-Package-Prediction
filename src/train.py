@@ -11,7 +11,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import make_column_transformer
 from sklearn.pipeline import make_pipeline
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score, f1_score, classification_report
+from sklearn.metrics import accuracy_score, f1_score
 
 import xgboost as xgb
 import mlflow
@@ -23,12 +23,7 @@ from huggingface_hub import HfApi, create_repo
 from huggingface_hub.utils import RepositoryNotFoundError
 
 # ----------------------------
-# MLflow setup
-# ----------------------------
-mlflow.set_experiment("tourism-package-training")
-
-# ----------------------------
-# Project Paths (Dynamic Relative Paths)
+# Project Paths & MLflow Config
 # ----------------------------
 # Get the base directory of the repository
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,6 +31,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Define model directory relative to root
 MODEL_DIR = os.path.join(BASE_DIR, "models")
 os.makedirs(MODEL_DIR, exist_ok=True)
+
+# Define and set MLflow tracking directory to prevent Permission Errors
+MLFLOW_TRACKING_DIR = os.path.join(BASE_DIR, "mlruns")
+os.makedirs(MLFLOW_TRACKING_DIR, exist_ok=True)
+
+# Set MLflow to use the local workspace instead of system defaults
+mlflow.set_tracking_uri(f"file://{MLFLOW_TRACKING_DIR}")
+mlflow.set_experiment("tourism-package-training")
 
 # ----------------------------
 # Data Loading (Hugging Face Dataset)
@@ -77,7 +80,6 @@ preprocessor = make_column_transformer(
 xgb_model = xgb.XGBClassifier(
     random_state=42,
     n_jobs=-1,
-    use_label_encoder=False,
     eval_metric='logloss'
 )
 
@@ -117,15 +119,16 @@ with mlflow.start_run():
     }
 
     mlflow.log_metrics(metrics)
-    print(f"Metrics: {metrics}")
+    print(f"Final Metrics: {metrics}")
 
     # ----------------------------
     # Save model locally
     # ----------------------------
     model_path = os.path.join(MODEL_DIR, "tourism_xgb_model.joblib")
     joblib.dump(best_model, model_path)
+    
+    # Log the artifact using the local relative path
     mlflow.log_artifact(model_path, artifact_path="model")
-
     print(f"Model trained and saved locally at {model_path}")
 
 # ----------------------------
@@ -134,13 +137,12 @@ with mlflow.start_run():
 api = HfApi(token=os.getenv("HF_TOKEN"))
 repo_id = "Sriranjan/Tourism-Package-Pred"
 
-# Note: We are uploading to the Dataset/Model repo, not the Space repo directly here
 try:
     api.upload_file(
         path_or_fileobj=model_path,
         path_in_repo="models/tourism_xgb_model.joblib",
         repo_id=repo_id,
-        repo_type="dataset", # Keeping consistent with your data storage
+        repo_type="dataset", 
         commit_message="Upload trained XGBoost Classifier"
     )
     print("Model successfully uploaded to Hugging Face Hub.")
