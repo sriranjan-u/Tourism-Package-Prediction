@@ -23,7 +23,7 @@ jobs:
 
       - name: Run Pipeline Steps
         env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }} # Ensure this exact line exists
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           python src/preprocess.py
           python src/train.py
@@ -39,22 +39,25 @@ jobs:
           api = HfApi(token=os.getenv('HF_TOKEN'))
           repo_id = 'Sriranjan/Tourism-Package-Pred'
           
-          # Uploading deployment assets to Space
+          # Map local paths to the specific locations required by the HF Space
+          # Note: Dockerfile and requirements.txt MUST be in the root for the build to work.
           files_to_upload = [
-              ('app/app.py', 'app.py'),
+              ('app/app.py', 'app/app.py'),
               ('app/requirements.txt', 'requirements.txt'),
-              ('Dockerfile', 'Dockerfile'),
+              ('app/Dockerfile', 'Dockerfile'),
               ('models/tourism_xgb_model.joblib', 'models/tourism_xgb_model.joblib'),
               ('README.md', 'README.md')
           ]
           
           for local_path, repo_path in files_to_upload:
               if os.path.exists(local_path):
-                  print(f'Uploading {local_path}...')
+                  print(f'Uploading {local_path} to {repo_path}...')
                   api.upload_file(
                       path_or_fileobj=local_path,
                       path_in_repo=repo_path,
                       repo_id=repo_id,
                       repo_type='space'
                   )
+              else:
+                  print(f'Warning: {local_path} not found. Skipping.')
           "

@@ -1,21 +1,22 @@
 # Use a lightweight Python image
 FROM python:3.12-slim
 
-# Set the working directory
+# Set the working directory to /code
 WORKDIR /code
 
-# Copy the requirements file from the app directory
-COPY ./app/requirements.txt /code/requirements.txt
+# Copy requirements from the local path to the container
+# If the Dockerfile is in root, use: COPY app/requirements.txt .
+# If the Dockerfile is in app/, use: COPY requirements.txt .
+COPY app/requirements.txt /code/requirements.txt
 
 # Install dependencies
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-# Copy the entire app directory into the container
-COPY ./app /code/app
+# Copy all files into the container
+COPY . /code
 
-# Set environmental variable to ensure Streamlit runs on port 7860
-ENV STREAMLIT_SERVER_PORT=7860
-ENV STREAMLIT_SERVER_ADDRESS=0.0.0.0
+# Standard Hugging Face port
+EXPOSE 7860
 
-# Command to run the app from its subdirectory
-CMD ["streamlit", "run", "app/app.py"]
+# Command to run the app
+CMD ["streamlit", "run", "app/app.py", "--server.port=7860", "--server.address=0.0.0.0"]
