@@ -25,6 +25,7 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
+          # Executes preprocessing, model training, and performance evaluation
           python src/preprocess.py
           python src/train.py
           python src/evaluate.py
@@ -34,13 +35,23 @@ jobs:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           python -c "
-          from huggingface_hub import HfApi
+          from huggingface_hub import HfApi, create_repo
+          from huggingface_hub.utils import RepositoryNotFoundError
           import os
+          
           api = HfApi(token=os.getenv('HF_TOKEN'))
           repo_id = 'Sriranjan/Tourism-Package-Pred'
           
-          # Map local paths to the specific locations required by the HF Space
-          # Note: Dockerfile and requirements.txt MUST be in the root for the build to work.
+          # 1. Ensure the Space exists and is configured for Docker
+          try:
+              api.repo_info(repo_id=repo_id, repo_type='space')
+              print(f'Space {repo_id} confirmed.')
+          except RepositoryNotFoundError:
+              print(f'Space {repo_id} not found. Creating new Docker Space...')
+              create_repo(repo_id=repo_id, repo_type='space', space_sdk='docker', private=False)
+
+          # 2. Map and upload deployment assets
+          # Dockerfile and requirements.txt are moved to root for HF build detection
           files_to_upload = [
               ('app/app.py', 'app/app.py'),
               ('app/requirements.txt', 'requirements.txt'),
@@ -56,8 +67,4 @@ jobs:
                       path_or_fileobj=local_path,
                       path_in_repo=repo_path,
                       repo_id=repo_id,
-                      repo_type='space'
-                  )
-              else:
-                  print(f'Warning: {local_path} not found. Skipping.')
-          "
+                      repo_type
