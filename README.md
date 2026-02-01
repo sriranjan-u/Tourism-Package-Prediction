@@ -1,14 +1,22 @@
-# Wellness Tourism Package Prediction
+---
+title: Tourism Package Prediction
+emoji: ✈️
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+pinned: false
+---
 
-An end-to-end MLOps project designed to predict customer purchase behavior for a new Wellness Tourism Package. This project automates the entire machine learning lifecycle—from data ingestion and preprocessing to model training and cloud deployment.
+#Tourism Package Prediction
+
+An end-to-end MLOps project designed to predict customer purchase behavior for a new Tourism Package. This project automates the entire machine learning lifecycle—from data ingestion and preprocessing to model training and cloud deployment.
 
 ## Project Links
 * **GitHub Repository**: [https://github.com/sriranjan-u/Tourism-Package-Prediction]
 * **Hugging Face Space (Demo)**: [https://huggingface.co/spaces/Sriranjan/Tourism-Package-Pred]
 * **Dataset & Model Hub**: [https://huggingface.co/Sriranjan/Tourism-Package-Pred]
 
-## MLOps Architecture
-[Image of an MLOps pipeline architecture showing data ingestion, training, evaluation, and deployment to a cloud environment]
 
 The project utilizes a modular CI/CD architecture managed via GitHub Actions:
 
@@ -21,7 +29,7 @@ The project utilizes a modular CI/CD architecture managed via GitHub Actions:
 4.  **Deployment**: The prediction service is containerized via **Dockerfile** and served via **Streamlit** on Hugging Face Spaces.
 
 ## Directory Structure
-```text
+
 .
 ├── .github/workflows/
 │   └── mlops.yml             # CI/CD Automation Pipeline
