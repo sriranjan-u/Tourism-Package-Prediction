@@ -56,6 +56,12 @@ print("Data loaded successfully from Hugging Face")
 
 
 
+# Get the base directory of the repository
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+MODEL_DIR = os.path.join(BASE_DIR, "models")
+os.makedirs(MODEL_DIR, exist_ok=True)
+
 # New (Correct Local Path):
 #LOCAL_PROCESSED_PATH = "/content/Tourism-Package-Prediction/data/processed"
 
