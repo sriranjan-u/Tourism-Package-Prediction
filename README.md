@@ -1,6 +1,5 @@
 ---
 title: Sriranjan's Tourism Package Prediction
-emoji: ✈️
 colorFrom: blue
 colorTo: green
 sdk: docker

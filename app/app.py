@@ -29,7 +29,7 @@ model = load_model()
 
 # --- Streamlit UI ---
 st.set_page_config(page_title="Tourism Predictor", layout="wide")
-st.title("✈️ Wellness Tourism Package Prediction")
+st.title("Sriranjan's Tourism Package Prediction")
 st.write("""
 This app predicts if a customer will purchase a package based on their profile.
 Enter the details below to generate a prediction.
@@ -43,7 +43,7 @@ if model is None:
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.header("👤 Personal Details")
+    st.header("Personal Details")
     age = st.number_input("Age", 18, 100, 30)
     gender = st.selectbox("Gender", ["Male", "Female", "Fe Male"])
     marital_status = st.selectbox("Marital Status", ["Single", "Married", "Unmarried", "Divorced"])
@@ -53,7 +53,7 @@ with col1:
     own_car = st.selectbox("Owns Car?", ["No", "Yes"])
 
 with col2:
-    st.header("🏨 Travel Preferences")
+    st.header("Travel Preferences")
     city_tier = st.selectbox("City Tier", [1, 2, 3])
     designation = st.selectbox("Designation", ["Manager", "Executive", "Senior Manager", "AVP", "VP"])
     prop_star = st.slider("Property Rating Preference", 3, 5, 3)
@@ -62,7 +62,7 @@ with col2:
     children = st.number_input("Number of Children", 0, 5, 0)
 
 with col3:
-    st.header("📞 Interaction")
+    st.header("Interaction")
     contact = st.selectbox("Type of Contact", ["Self Enquiry", "Company Invited"])
     product = st.selectbox("Product Pitched", ["Deluxe", "Basic", "Standard", "Super Deluxe", "King"])
     pitch_dur = st.number_input("Duration of Pitch (min)", 1, 120, 15)
