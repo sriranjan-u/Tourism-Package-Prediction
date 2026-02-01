@@ -1,0 +1,25 @@
+# MLflow tracking data
+mlruns/
+mlflow.db
+
+# Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local environment and models
+.env
+.venv/
+env/
+venv/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS system files
+.DS_Store
+
+!git add .gitignore
+!git commit -m "chore: add .gitignore to exclude MLflow and cache files"
+!git push origin main
