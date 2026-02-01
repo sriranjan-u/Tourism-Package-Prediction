@@ -1,9 +1,15 @@
+# Core Data and ML
 pandas
 numpy
 scikit-learn
+xgboost
+
+# Visualization and Tracking
 matplotlib
 seaborn
-joblib
-streamlit
 mlflow
-huggingface_hub
+
+# Deployment and Integration
+streamlit
+joblib
+huggingface-hub
