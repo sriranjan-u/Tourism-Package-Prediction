@@ -29,7 +29,7 @@ The project utilizes a modular CI/CD architecture managed via GitHub Actions:
 4.  **Deployment**: The prediction service is containerized via **Dockerfile** and served via **Streamlit** on Hugging Face Spaces.
 
 ## Directory Structure
-
+```text
 .
 ├── .github/workflows/
 │   └── mlops.yml             # CI/CD Automation Pipeline
