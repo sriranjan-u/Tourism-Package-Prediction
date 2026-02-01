@@ -25,7 +25,7 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # Executes preprocessing, model training, and performance evaluation
+          # Runs the full MLOps cycle: data prep, training, and evaluation
           python src/preprocess.py
           python src/train.py
           python src/evaluate.py
@@ -34,24 +34,24 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          python -c "
+          # Using EOF to prevent shell parsing errors with quotes
+          python - <<EOF
           from huggingface_hub import HfApi, create_repo
           from huggingface_hub.utils import RepositoryNotFoundError
           import os
-          
+
           api = HfApi(token=os.getenv('HF_TOKEN'))
           repo_id = 'Sriranjan/Tourism-Package-Pred'
-          
-          # 1. Ensure the Space exists and is configured for Docker
+
+          # 1. Ensure the Space exists
           try:
               api.repo_info(repo_id=repo_id, repo_type='space')
               print(f'Space {repo_id} confirmed.')
           except RepositoryNotFoundError:
-              print(f'Space {repo_id} not found. Creating new Docker Space...')
-              create_repo(repo_id=repo_id, repo_type='space', space_sdk='docker', private=False)
+              print(f'Space {repo_id} not found. Creating it...')
+              create_repo(repo_id=repo_id, repo_type='space', space_sdk='docker')
 
-          # 2. Map and upload deployment assets
-          # Dockerfile and requirements.txt are moved to root for HF build detection
+          # 2. Upload assets with correct root mapping for HF Spaces
           files_to_upload = [
               ('app/app.py', 'app/app.py'),
               ('app/requirements.txt', 'requirements.txt'),
@@ -59,7 +59,7 @@ jobs:
               ('models/tourism_xgb_model.joblib', 'models/tourism_xgb_model.joblib'),
               ('README.md', 'README.md')
           ]
-          
+
           for local_path, repo_path in files_to_upload:
               if os.path.exists(local_path):
                   print(f'Uploading {local_path} to {repo_path}...')
@@ -67,4 +67,8 @@ jobs:
                       path_or_fileobj=local_path,
                       path_in_repo=repo_path,
                       repo_id=repo_id,
-                      repo_type
+                      repo_type='space'
+                  )
+              else:
+                  print(f'Warning: {local_path} not found.')
+          EOF
